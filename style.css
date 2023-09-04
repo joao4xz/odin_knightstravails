@@ -1,0 +1,45 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#board {
+  margin: 10px;
+  width: 804px;
+  height: 804px;
+  border: 2px solid black;
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+}
+
+.line {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.square:hover {
+  background-color: #ddd;
+}
+
+.line:nth-child(odd) .square:nth-child(even) {
+  background-color: black;
+}
+
+.line:nth-child(odd) .square:nth-child(even):hover {
+  background-color: #444;
+}
+
+.line:nth-child(even) .square:nth-child(odd) {
+  background-color: black;
+}
+
+.line:nth-child(even) .square:nth-child(odd):hover {
+  background-color: #444;
+}
