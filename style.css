@@ -24,6 +24,12 @@ body {
   grid-template-columns: repeat(8, 1fr);
 }
 
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .square:hover {
   background-color: #ddd;
 }
