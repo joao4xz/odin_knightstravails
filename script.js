@@ -1,9 +1,67 @@
+function printResult(result) {
+  console.log(result.path.length);
+  for (let i = 1; i < result.path.length - 1; i++) {
+    const line = document.getElementById(`Line${result.path[i][0]}`);
+    const square = line.querySelector(`.square${result.path[i][1]}`);
+    square.classList.add('path');
+    square.textContent = i;
+    console.log(line);
+    console.log(square);
+  }
+  console.log(result);
+}
+
+function isInsideBoard(x, y) {
+  return x >= 0 && x < 8 && y >= 0 && y < 8;
+}
+
+function knightMoves(horseCord, targetCord) {
+  const moves = [
+    [-2, -1],
+    [-2, 1],
+    [2, -1],
+    [2, 1],
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+  ];
+  const visited = Array(8)
+    .fill()
+    .map(() => Array(8).fill(false));
+  const queue = [{ position: horseCord, depth: 0, path: [horseCord] }];
+
+  while (queue.length > 0) {
+    const { position, depth, path } = queue.shift();
+    const [x, y] = position;
+
+    if (x === targetCord[0] && y === targetCord[1]) {
+      return { minMoves: depth, path };
+    }
+
+    for (const [dx, dy] of moves) {
+      const newX = x + dx;
+      const newY = y + dy;
+
+      if (isInsideBoard(newX, newY) && !visited[newX][newY]) {
+        const newPath = [...path, [newX, newY]];
+        queue.push({ position: [newX, newY], depth: depth + 1, path: newPath });
+        visited[newX][newY] = true;
+      }
+    }
+  }
+
+  return { minMoves: -1, reachablePositions: [] };
+}
+
 function createBoard() {
   const board = document.getElementById('board');
   let currentLine = 0;
   let currentCol = 0;
   let isKnightSelected = false;
   let isDestinySelected = false;
+  let horseCord = 0;
+  let targetCord = 0;
 
   for (let i = 0; i < 64; i++) {
     if (i === 0 || i % 8 === 0) {
@@ -30,8 +88,8 @@ function createBoard() {
 
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('width', '95');
-        svg.setAttribute('height', '95');
+        svg.setAttribute('width', '47');
+        svg.setAttribute('height', '47');
         var title = document.createElementNS(
           'http://www.w3.org/2000/svg',
           'title'
@@ -60,20 +118,24 @@ function createBoard() {
         square.appendChild(svg);
 
         isKnightSelected = true;
-      } else if (isKnightSelected && !isDestinySelected) {
+        horseCord = [parseInt(lineNumber), parseInt(squareNumber)];
+      } else if (
+        isKnightSelected &&
+        !isDestinySelected &&
+        !event.target.closest('div').classList.contains('knight-selected')
+      ) {
         event.target.setAttribute('id', 'destiny-selected');
 
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
         svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('width', '90');
-        svg.setAttribute('height', '90');
+        svg.setAttribute('width', '45');
+        svg.setAttribute('height', '45');
 
         var title = document.createElementNS(
           'http://www.w3.org/2000/svg',
           'title'
         );
-        title.textContent = 'bullseye';
 
         var path = document.createElementNS(
           'http://www.w3.org/2000/svg',
@@ -100,6 +162,11 @@ function createBoard() {
         square.appendChild(svg);
 
         isDestinySelected = true;
+        targetCord = [parseInt(lineNumber), parseInt(squareNumber)];
+
+        const result = knightMoves(horseCord, targetCord);
+        console.log(result);
+        printResult(result);
       }
     });
 
